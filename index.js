@@ -32,18 +32,18 @@ var COMPLETE = 3;
  * Array containing space PHRASES.
  */
 var PHRASES = [
-    "Dominic Abhi and Cathal are the greatest alexa developers to ever live.",
-    "My mom drove me to school fifteen minutes late on Tuesday.",
-    "The girl wore her hair in two braids tied with two blue bows.",
-    "The mouse was so hungry he ran across the kitchen floor without even looking for humans.",
-    "The tape got stuck on my lips so I couldn't talk anymore.",
-    "The door slammed down on my hand and I screamed like a little baby.",
-    "My shoes are blue with yellow stripes and green stars on the front.",
-    "The mailbox was bent and broken and looked like someone had knocked it over on purpose.",
-    "I was so thirsty I couldn't wait to get a drink of water.",
-    "I found a gold coin on the playground after school today.",
-    "The chocolate chip cookies smelled so good that I ate one without asking.",
-    "My bandaid wasn't sticky any more so it fell off on the way to school."
+    "Dominic Abhi and Cathal are the greatest alexa developers to ever live",
+    "My mom drove me to school fifteen minutes late on Tuesday",
+    "The girl wore her hair in two braids tied with two blue bows",
+    "The mouse was so hungry he ran across the kitchen floor without even looking for humans",
+    "The tape got stuck on my lips so I couldn't talk anymore",
+    "The door slammed down on my hand and I screamed like a little baby",
+    "My shoes are blue with yellow stripes and green stars on the front",
+    "The mailbox was bent and broken and looked like someone had knocked it over on purpose",
+    "I was so thirsty I couldn't wait to get a drink of water",
+    "I found a gold coin on the playground after school today",
+    "The chocolate chip cookies smelled so good that I ate one without asking",
+    "My bandaid wasn't sticky any more so it fell off on the way to school"
 ];
 
 /**
@@ -121,6 +121,7 @@ function handleSpeechTherapyRequest(intent, session, response) {
         currentPhrase = randomPhrase.toLowerCase().trim();
     
         // Create speech output
+        currentState = BEGIN;
         speechOutput = currentState + "R Please repeat after me: " + randomPhrase;
         currentState = REPEAT;
 
@@ -186,8 +187,10 @@ function handleVerifySpeechRequest(intent, session, response) {
                 speechOutput = "WR 1 please repeat after me: " + currentPhrase;
             }
             else 
+                currentState = WORD_REPEAT;
                 speechOutput = "WR 2 Please repeat after me: " + wrongWordQueue[0];
         } else {
+            currentState = WORD_REPEAT;
             speechOutput = "WR 3 Please repeat after me: " + wrongWordQueue[0];
         }
         response.ask(speechOutput, speechOutput);
