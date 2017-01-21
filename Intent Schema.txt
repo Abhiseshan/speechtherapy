@@ -1,9 +1,6 @@
 {
   "intents": [
     {
-      "intent": "ScoreIntent"
-    },
-    {
       "intent": "SpeechTherapyIntent"
     },
     {

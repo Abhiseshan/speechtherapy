@@ -7,8 +7,3 @@ VerifySpeechIntent {this is a placeholder and does not matter|speech}
 
 AMAZON.StopIntent quit
 AMAZON.CancelIntent quit
-
-ScoreIntent what is my score
-ScoreIntent what's my score
-ScoreIntent what is my current score
-ScoreIntent what's my current score

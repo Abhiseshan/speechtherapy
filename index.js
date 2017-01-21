@@ -24,8 +24,6 @@ var currentPhrase = "";
 var wrongWordQueue = [];
 var currentState = 0;
 
-var score = 0;
-
 var BEGIN = 0;
 var REPEAT = 1;
 var WORD_REPEAT = 2;
@@ -92,7 +90,6 @@ Phrase.prototype.eventHandlers.onSessionStarted = function (sessionStartedReques
     currentPhrase = "";
     currentState = 0;
     wrongWordQueue = [];
-    score = 0;
 };
 
 Phrase.prototype.eventHandlers.onLaunch = function (launchRequest, session, response) {
@@ -112,10 +109,6 @@ Phrase.prototype.eventHandlers.onSessionEnded = function (sessionEndedRequest, s
 };
 
 Phrase.prototype.intentHandlers = {
-    "ScoreIntent": function(intent,session,response) {
-        handleScoreRequest(intent,session,response);
-    },
-
     "SpeechTherapyIntent": function (intent, session, response) {
         handleSpeechTherapyRequest(intent, session, response);
     },
@@ -129,20 +122,15 @@ Phrase.prototype.intentHandlers = {
     },
 
     "AMAZON.StopIntent": function (intent, session, response) {
-        var speechOutput = "Goodbye! Your final score was " + score;
+        var speechOutput = "Goodbye!";
         response.tell(speechOutput);
     },
 
     "AMAZON.CancelIntent": function (intent, session, response) {
-        var speechOutput = "Goodbye! Your final score was " + score;
+        var speechOutput = "Goodbye!";
         response.tell(speechOutput);
     }
 };
-
-function handleScoreRequest(intent, session, response) {
-    speechOutput = "Your current score is " + score + "! Say another one to keep going!";
-    response.ask(speechOutput, speechOutput);
-}
 
 
 function handleSpeechTherapyRequest(intent, session, response) {
@@ -170,8 +158,7 @@ function handleVerifySpeechRequest(intent, session, response) {
         if (detectedSpeech.localeCompare(currentPhrase)===0){
             currentState = COMPLETE;
             wrongWordQueue = [];
-            speechOutput = "Well done! You earned a point! Say Another One to try a new sentance or quit to quit Speech Therapy.";
-            score++;
+            speechOutput = "Well done! Say Another One to try a new sentance or quit to quit Speech Therapy.";
             response.ask(speechOutput, speechOutput);
         } else {
             currentState = WORD_REPEAT;
@@ -202,8 +189,7 @@ function handleVerifySpeechRequest(intent, session, response) {
                 if (wrongWordQueue.length === 0) {
                     currentState = COMPLETE;
                     wrongWordQueue = [];
-                    speechOutput = "Well done! You've earned a point! Say Another One to try a new sentance or quit to quit Speech Therapy.";
-                    score++;
+                    speechOutput = "Well done! Say Another One to try a new sentance or quit to quit Speech Therapy.";
                     response.ask(speechOutput, speechOutput);
                 } else if(wrongWordQueue.length === 1) {
                    speechOutput = "RP 1 Almost! But it looks like you made one small mistake! Let's practice! Please repeat after me: " + wrongWordQueue[0];
