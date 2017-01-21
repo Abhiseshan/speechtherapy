@@ -170,7 +170,7 @@ function handleSpeechTherapyRequest(intent, session, response) {
 
         // Create speech output
         currentState = BEGIN;
-        speechOutput = currentState + "R Please repeat after me: " + randomPhrase;
+        speechOutput = currentState + "Please repeat after me: " + randomPhrase;
         currentState = REPEAT;
 
         response.ask(speechOutput, speechOutput);
@@ -222,9 +222,9 @@ function handleVerifySpeechRequest(intent, session, response) {
                     speechOutput = "Well done! Say Another One to try a new sentance or quit to quit Speech Therapy.";
                     response.ask(speechOutput, speechOutput);
                 } else if(wrongWordQueue.length === 1) {
-                   speechOutput = "RP 1 Almost! But it looks like you made one small mistake! Let's practice! Please repeat after me: " + wrongWordQueue[0];
+                   speechOutput = "Almost! But it looks like you made one small mistake! Let's practice! Please repeat after me: " + wrongWordQueue[0];
                 }else{
-                    speechOutput = "RP 2 Looks like you made a mistake on " + wrongWordQueue.length + "words. Don't worry, let's practice! Okay, repeat after me: " + wrongWordQueue[0];
+                    speechOutput = "Looks like you made a mistake on " + wrongWordQueue.length + "words. Don't worry, let's practice! Okay, repeat after me: " + wrongWordQueue[0];
                 }
             }
             response.ask(speechOutput, speechOutput);
@@ -238,14 +238,14 @@ function handleVerifySpeechRequest(intent, session, response) {
 
             if (wrongWordQueue.length === 0) {
                 currentState = REPEAT;
-                speechOutput = "WR 1 Great stuff! Let's try the entire phrase again. Repeat after me: " + currentPhrase;
+                speechOutput = "Great stuff! Let's try the entire phrase again. Repeat after me: " + currentPhrase;
             } else {
                 currentState = WORD_REPEAT;
-                speechOutput = "WR 2 Good job! Ok, next one! Repeat after me: " + wrongWordQueue[0];
+                speechOutput = "Good job! Ok, next one! Repeat after me: " + wrongWordQueue[0];
             }
         } else {
             currentState = WORD_REPEAT;
-            speechOutput = "WR 3 Not quite! Try again! Please repeat after me: " + wrongWordQueue[0];
+            speechOutput = "Not quite! Try again! Please repeat after me: " + wrongWordQueue[0];
         }
         response.ask(speechOutput, speechOutput);
     } else if (currentState == COMPLETE) {
