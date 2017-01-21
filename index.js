@@ -75,7 +75,7 @@ Phrase.prototype.eventHandlers.onSessionStarted = function (sessionStartedReques
 
 Phrase.prototype.eventHandlers.onLaunch = function (launchRequest, session, response) {
     //console.log("onLaunch requestId: " + launchRequest.requestId + ", sessionId: " + session.sessionId);
-    handleSpeechTherapyRequest(response);
+    handleSpeechTherapyRequest(launchRequest, session, response);
 };
 
 /**
@@ -115,13 +115,6 @@ Phrase.prototype.intentHandlers = {
 
 
 function handleSpeechTherapyRequest(intent, session, response) {
-    handleVerifySpeechRequest(intent, session, response)
-}
-
-function handleVerifySpeechRequest(intent, session, response) {
-    var speechOutput = "";
-
-    if (currentState == BEGIN) {
         var phraseIndex = Math.floor(Math.random() * PHRASES.length);
         var randomPhrase = PHRASES[phraseIndex];
     
@@ -132,83 +125,86 @@ function handleVerifySpeechRequest(intent, session, response) {
         currentState = REPEAT;
 
         response.ask(speechOutput, speechOutput);
-    } else {
-        var detectedSpeech = intent.slots.speech.value;
-        detectedSpeech = detectedSpeech.toLowerCase().trim();
+}
+
+function handleVerifySpeechRequest(intent, session, response) {
+    var speechOutput = "";
+
+    var detectedSpeech = intent.slots.speech.value;
+    detectedSpeech = detectedSpeech.toLowerCase().trim();
 
 
-        if (currentState == REPEAT) {
-            if (detectedSpeech.localeCompare(currentPhrase)===0){
-                currentState = COMPLETE;
-                wrongWordQueue = [];
-                speechOutput = "Well done! Say Another One to try a new sentance or quit to quit Speech Therapy.";
-                response.ask(speechOutput, speechOutput);
+    if (currentState == REPEAT) {
+        if (detectedSpeech.localeCompare(currentPhrase)===0){
+            currentState = COMPLETE;
+            wrongWordQueue = [];
+            speechOutput = "Well done! Say Another One to try a new sentance or quit to quit Speech Therapy.";
+            response.ask(speechOutput, speechOutput);
+        } else {
+            currentState = WORD_REPEAT;
+
+            var ans = currentPhrase.split(" ");
+            var inp = detectedSpeech.split(" ");
+
+            //Some kind of machine learnign?
+            if ((ans.length - inp.length) !== 0) {
+                currentState = REPEAT;
+                speechOutput = "Could you please repeat after me: " + currentPhrase;
             } else {
                 currentState = WORD_REPEAT;
-    
-                var ans = currentPhrase.split(" ");
-                var inp = detectedSpeech.split(" ");
-    
-                //Some kind of machine learnign?
-                if ((ans.length - inp.length) !== 0) {
-                    currentState = REPEAT;
-                    speechOutput = "Could you please repeat after me: " + currentPhrase;
-                } else {
-                    currentState = WORD_REPEAT;
-                    for (i=0; i<ans.length; i++) {
-                        //two iterators? 
-                        if (ans[i].localeCompare(inp[i]) !== 0) {
-                            var ww = "";
-                            if (i-1 >= 0)
-                                ww += ans[i-1];
-                            ww += " " + ans[i] + " ";
-                            if (i+1 < ans.length)
-                                ww+= ans[i+1];
-                                
-                            wrongWordQueue.push(ww.trim());
-                        }
-                    }
-                    
-                    if (wrongWordQueue.length === 0) {
-                        currentState = COMPLETE;
-                        wrongWordQueue = [];
-                        speechOutput = "Well done! Say Another One to try a new sentance or quit to quit Speech Therapy.";
-                        response.ask(speechOutput, speechOutput);
-                    } else {
-                        speechOutput = "RP Please repeat after me: " + wrongWordQueue[0];
+                for (i=0; i<ans.length; i++) {
+                    //two iterators? 
+                    if (ans[i].localeCompare(inp[i]) !== 0) {
+                        var ww = "";
+                        if (i-1 >= 0)
+                            ww += ans[i-1];
+                        ww += " " + ans[i] + " ";
+                        if (i+1 < ans.length)
+                            ww+= ans[i+1];
+                            
+                        wrongWordQueue.push(ww.trim());
                     }
                 }
-                response.ask(speechOutput, speechOutput);
-            }
-        } else if (currentState == WORD_REPEAT) {
-            if (detectedSpeech.localeCompare(wrongWordQueue[0]) === 0){
-                wrongWordQueue.shift();
-    
+                
                 if (wrongWordQueue.length === 0) {
-                    currentState = REPEAT;
-                    speechOutput = "WR 1 please repeat after me: " + currentPhrase;
+                    currentState = COMPLETE;
+                    wrongWordQueue = [];
+                    speechOutput = "Well done! Say Another One to try a new sentance or quit to quit Speech Therapy.";
+                    response.ask(speechOutput, speechOutput);
+                } else {
+                    speechOutput = "RP Please repeat after me: " + wrongWordQueue[0];
                 }
-                else 
-                    speechOutput = "WR 2 Please repeat after me: " + wrongWordQueue[0];
-            } else {
-                speechOutput = "WR 3 Please repeat after me: " + wrongWordQueue[0];
             }
             response.ask(speechOutput, speechOutput);
-        } else if (currentState == COMPLETE) {
-            currentPhrase = "";
-            if (detectedSpeech == "another one") {
-                currentState = BEGIN;
-                currentPhrase = "";
-                wrongWordQueue = [];
-                handleVerifySpeechRequest(intent, session, response);
-            } else {
-                speechOutput = "I didn't understand you. Say Another One to try a new sentance or quit to quit Speech Therapy.";
-                response.ask(speechOutput, speechOutput);            
+        }
+    } else if (currentState == WORD_REPEAT) {
+        if (detectedSpeech.localeCompare(wrongWordQueue[0]) === 0){
+            wrongWordQueue.shift();
+
+            if (wrongWordQueue.length === 0) {
+                currentState = REPEAT;
+                speechOutput = "WR 1 please repeat after me: " + currentPhrase;
             }
+            else 
+                speechOutput = "WR 2 Please repeat after me: " + wrongWordQueue[0];
+        } else {
+            speechOutput = "WR 3 Please repeat after me: " + wrongWordQueue[0];
+        }
+        response.ask(speechOutput, speechOutput);
+    } else if (currentState == COMPLETE) {
+        currentPhrase = "";
+        if (detectedSpeech == "another one") {
+            currentState = BEGIN;
+            currentPhrase = "";
+            wrongWordQueue = [];
+            handleSpeechTherapyRequest(intent, session, response);
         } else {
             speechOutput = "I didn't understand you. Say Another One to try a new sentance or quit to quit Speech Therapy.";
-            response.ask(speechOutput, speechOutput);                    
+            response.ask(speechOutput, speechOutput);            
         }
+    } else {
+        speechOutput = "I didn't understand you. Say Another One to try a new sentance or quit to quit Speech Therapy.";
+        response.ask(speechOutput, speechOutput);                    
     }
 }
 
