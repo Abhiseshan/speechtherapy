@@ -154,6 +154,7 @@ function handleVerifySpeechRequest(intent, session, response) {
     detectedSpeech = detectedSpeech.toLowerCase().trim();
 
 
+    //PHRASE REPEAT
     if (currentState == REPEAT) {
         if (detectedSpeech.localeCompare(currentPhrase)===0){
             currentState = COMPLETE;
@@ -199,20 +200,23 @@ function handleVerifySpeechRequest(intent, session, response) {
             }
             response.ask(speechOutput, speechOutput);
         }
+
+    // WORD REPEAT
     } else if (currentState == WORD_REPEAT) {
+        //if correct
         if (detectedSpeech.localeCompare(wrongWordQueue[0]) === 0){
             wrongWordQueue.shift();
 
             if (wrongWordQueue.length === 0) {
                 currentState = REPEAT;
-                speechOutput = "WR 1 please repeat after me: " + currentPhrase;
-            }
-            else
+                speechOutput = "WR 1 Great stuff! Let's try the entire phrase again. Repeat after me: " + currentPhrase;
+            } else {
                 currentState = WORD_REPEAT;
-                speechOutput = "WR 2 Please repeat after me: " + wrongWordQueue[0];
+                speechOutput = "WR 2 Good job! Ok, next one! Repeat after me: " + wrongWordQueue[0];
+            }
         } else {
             currentState = WORD_REPEAT;
-            speechOutput = "WR 3 Please repeat after me: " + wrongWordQueue[0];
+            speechOutput = "WR 3 Not quite! Try again! Please repeat after me: " + wrongWordQueue[0];
         }
         response.ask(speechOutput, speechOutput);
     } else if (currentState == COMPLETE) {
