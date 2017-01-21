@@ -113,8 +113,7 @@ function handleSpeechTherapyRequest(response) {
 
     // Create speech output
     var speechOutput = "Please repeat after me: " + randomPhrase;
-    var cardTitle = "Card Title";
-    response.tellWithCard(speechOutput, cardTitle, speechOutput);
+    response.ask(speechOutput, speechOutput);
 }
 
 function handleVerifySpeechRequest(intent, session, response) {
