@@ -45,7 +45,26 @@ var PHRASES = [
     "I was so thirsty I couldn't wait to get a drink of water",
     "I found a gold coin on the playground after school today",
     "The chocolate chip cookies smelled so good that I ate one without asking",
-    "My bandaid wasn't sticky any more so it fell off on the way to school"
+    "My bandaid wasn't sticky any more so it fell off on the way to school",
+    "He had a sore throat so I gave him my bottle of water and told him to keep it.",
+    "The church was white and brown and looked very old.",
+    "I was so scared to go to a monster movie but my dad said he would sit with me so we went last night.",
+    "Your mom is so nice she gave me a ride home today.",
+    "I fell in the mud when I was walking home from school today.",
+    "This dinner is so delicious I can't stop eating.",
+    "The school principal was so mean that all the children were scared of him.",
+    "I went to the dentist the other day and he let me pick a prize out of the prize box.",
+    "The box was small and wrapped in paper with tiny silver and red glitter dots.",
+    "My dad is so funny that he told us jokes all night long and we never fell asleep.",
+    "The camping trip was so awesome that I didn't want to come home.",
+    "Are you going to have a blue birthday cake for your next birthday?",
+    "How did you know that I was going to have a peanut butter sandwich for lunch?",
+    "That boy is so mean that he doesn't care if a door slams in your face or if he cuts in line.",
+    "The moms and dads all sat around drinking coffee and eating donuts.",
+    "My mom made a milkshake with frozen bananas and chocolate sauce.",
+    "My pen broke and leaked blue ink all over my new dress.",
+    "I got my haircut today and they did it way too short.",
+    "My pet turtle, Jim, got out of his cage and I could not find him anywhere."
 ];
 
 /**
