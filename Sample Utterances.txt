@@ -1,0 +1,6 @@
+SpeechTherapyIntent practice
+SpeechTherapyIntent begin
+SpeechTherapyIntent start
+SpeechTherapyIntent please
+
+VerifySpeechIntent {this is a placeholder and does not matter|speech}
