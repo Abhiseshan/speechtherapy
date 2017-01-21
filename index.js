@@ -20,6 +20,7 @@
  * App ID for the skill
  */
 var APP_ID = undefined; //OPTIONAL: replace with "amzn1.echo-sdk-ams.app.[your-unique-value-here]";
+var currentPhrase = "";
 
 /**
  * Array containing space PHRASES.
@@ -81,6 +82,10 @@ Phrase.prototype.intentHandlers = {
         handleSpeechTherapyRequest(response);
     },
 
+    "VerifySpeechIntent": function(intent, session, response) {
+        handleVerifySpeechRequest(intent, session, response);
+    },
+
     "AMAZON.HelpIntent": function (intent, session, response) {
         response.ask("You can say begin speech therapy, or, you can say exit... What can I help you with?", "What can I help you with?");
     },
@@ -104,10 +109,26 @@ function handleSpeechTherapyRequest(response) {
     var phraseIndex = Math.floor(Math.random() * PHRASES.length);
     var randomPhrase = PHRASES[phraseIndex];
 
+    currentPhrase = randomPhrase;
+
     // Create speech output
     var speechOutput = "Please repeat after me: " + randomPhrase;
     var cardTitle = "Card Title";
     response.tellWithCard(speechOutput, cardTitle, speechOutput);
+}
+
+function handleVerifySpeechRequest(intent, session, response) {
+    var detectedSpeech = intent.slots.speech.value;
+
+    if (detectedSpeech == currentPhrase){
+        speechOutput = "Well done!";
+        cardTitle = "Card Title";
+        response.tellWithCard(speechOutput, cardTitle, speechOutput);
+    } else {
+        speechOutput = "I heard " + detectedSpeech;
+        cardTitle = "Card Title";
+        response.tellWithCard(speechOutput, cardTitle, speechOutput);
+    }
 }
 
 // Create the handler that responds to the Alexa Request.
