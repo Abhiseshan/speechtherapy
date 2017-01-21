@@ -24,6 +24,8 @@ var currentPhrase = "";
 var wrongWordQueue = [];
 var currentState = 0;
 
+var score = 0;
+
 var BEGIN = 0;
 var REPEAT = 1;
 var WORD_REPEAT = 2;
@@ -32,18 +34,18 @@ var COMPLETE = 3;
  * Array containing space PHRASES.
  */
 var PHRASES = [
-    "Dominic Abhi and Cathal are the greatest alexa developers to ever live.",
-    "My mom drove me to school fifteen minutes late on Tuesday.",
-    "The girl wore her hair in two braids tied with two blue bows.",
-    "The mouse was so hungry he ran across the kitchen floor without even looking for humans.",
-    "The tape got stuck on my lips so I couldn't talk anymore.",
-    "The door slammed down on my hand and I screamed like a little baby.",
-    "My shoes are blue with yellow stripes and green stars on the front.",
-    "The mailbox was bent and broken and looked like someone had knocked it over on purpose.",
-    "I was so thirsty I couldn't wait to get a drink of water.",
-    "I found a gold coin on the playground after school today.",
-    "The chocolate chip cookies smelled so good that I ate one without asking.",
-    "My bandaid wasn't sticky any more so it fell off on the way to school."
+    "Dominic Abhi and Cathal are the greatest alexa developers to ever live",
+    "My mom drove me to school fifteen minutes late on Tuesday",
+    "The girl wore her hair in two braids tied with two blue bows",
+    "The mouse was so hungry he ran across the kitchen floor without even looking for humans",
+    "The tape got stuck on my lips so I couldn't talk anymore",
+    "The door slammed down on my hand and I screamed like a little baby",
+    "My shoes are blue with yellow stripes and green stars on the front",
+    "The mailbox was bent and broken and looked like someone had knocked it over on purpose",
+    "I was so thirsty I couldn't wait to get a drink of water",
+    "I found a gold coin on the playground after school today",
+    "The chocolate chip cookies smelled so good that I ate one without asking",
+    "My bandaid wasn't sticky any more so it fell off on the way to school"
 ];
 
 /**
@@ -71,6 +73,7 @@ Phrase.prototype.eventHandlers.onSessionStarted = function (sessionStartedReques
     currentPhrase = "";
     currentState = 0;
     wrongWordQueue = [];
+    score = 0;
 };
 
 Phrase.prototype.eventHandlers.onLaunch = function (launchRequest, session, response) {
@@ -90,6 +93,10 @@ Phrase.prototype.eventHandlers.onSessionEnded = function (sessionEndedRequest, s
 };
 
 Phrase.prototype.intentHandlers = {
+    "ScoreIntent": function(intent,session,response) {
+        handleScoreRequest(intent,session,response);
+    },
+
     "SpeechTherapyIntent": function (intent, session, response) {
         handleSpeechTherapyRequest(intent, session, response);
     },
@@ -103,24 +110,30 @@ Phrase.prototype.intentHandlers = {
     },
 
     "AMAZON.StopIntent": function (intent, session, response) {
-        var speechOutput = "Goodbye";
+        var speechOutput = "Goodbye! Your final score was " + score;
         response.tell(speechOutput);
     },
 
     "AMAZON.CancelIntent": function (intent, session, response) {
-        var speechOutput = "Goodbye";
+        var speechOutput = "Goodbye! Your final score was " + score;
         response.tell(speechOutput);
     }
 };
+
+function handleScoreRequest(intent, session, response) {
+    speechOutput = "Your current score is " + score + "! Say another one to keep going!";
+    response.ask(speechOutput, speechOutput);
+}
 
 
 function handleSpeechTherapyRequest(intent, session, response) {
         var phraseIndex = Math.floor(Math.random() * PHRASES.length);
         var randomPhrase = PHRASES[phraseIndex];
-    
+
         currentPhrase = randomPhrase.toLowerCase().trim();
-    
+
         // Create speech output
+        currentState = BEGIN;
         speechOutput = currentState + "R Please repeat after me: " + randomPhrase;
         currentState = REPEAT;
 
@@ -138,7 +151,8 @@ function handleVerifySpeechRequest(intent, session, response) {
         if (detectedSpeech.localeCompare(currentPhrase)===0){
             currentState = COMPLETE;
             wrongWordQueue = [];
-            speechOutput = "Well done! Say Another One to try a new sentance or quit to quit Speech Therapy.";
+            speechOutput = "Well done! You earned a point! Say Another One to try a new sentance or quit to quit Speech Therapy.";
+            score++;
             response.ask(speechOutput, speechOutput);
         } else {
             currentState = WORD_REPEAT;
@@ -153,7 +167,7 @@ function handleVerifySpeechRequest(intent, session, response) {
             } else {
                 currentState = WORD_REPEAT;
                 for (i=0; i<ans.length; i++) {
-                    //two iterators? 
+                    //two iterators?
                     if (ans[i].localeCompare(inp[i]) !== 0) {
                         var ww = "";
                         if (i-1 >= 0)
@@ -161,15 +175,16 @@ function handleVerifySpeechRequest(intent, session, response) {
                         ww += " " + ans[i] + " ";
                         if (i+1 < ans.length)
                             ww+= ans[i+1];
-                            
+
                         wrongWordQueue.push(ww.trim());
                     }
                 }
-                
+
                 if (wrongWordQueue.length === 0) {
                     currentState = COMPLETE;
                     wrongWordQueue = [];
-                    speechOutput = "Well done! Say Another One to try a new sentance or quit to quit Speech Therapy.";
+                    speechOutput = "Well done! You've earned a point! Say Another One to try a new sentance or quit to quit Speech Therapy.";
+                    score++;
                     response.ask(speechOutput, speechOutput);
                 } else {
                     speechOutput = "RP Please repeat after me: " + wrongWordQueue[0];
@@ -185,9 +200,11 @@ function handleVerifySpeechRequest(intent, session, response) {
                 currentState = REPEAT;
                 speechOutput = "WR 1 please repeat after me: " + currentPhrase;
             }
-            else 
+            else
+                currentState = WORD_REPEAT;
                 speechOutput = "WR 2 Please repeat after me: " + wrongWordQueue[0];
         } else {
+            currentState = WORD_REPEAT;
             speechOutput = "WR 3 Please repeat after me: " + wrongWordQueue[0];
         }
         response.ask(speechOutput, speechOutput);
@@ -200,11 +217,11 @@ function handleVerifySpeechRequest(intent, session, response) {
             handleSpeechTherapyRequest(intent, session, response);
         } else {
             speechOutput = "I didn't understand you. Say Another One to try a new sentance or quit to quit Speech Therapy.";
-            response.ask(speechOutput, speechOutput);            
+            response.ask(speechOutput, speechOutput);
         }
     } else {
         speechOutput = "I didn't understand you. Say Another One to try a new sentance or quit to quit Speech Therapy.";
-        response.ask(speechOutput, speechOutput);                    
+        response.ask(speechOutput, speechOutput);
     }
 }
 
