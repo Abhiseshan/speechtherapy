@@ -205,8 +205,10 @@ function handleVerifySpeechRequest(intent, session, response) {
                     speechOutput = "Well done! You've earned a point! Say Another One to try a new sentance or quit to quit Speech Therapy.";
                     score++;
                     response.ask(speechOutput, speechOutput);
-                } else {
-                    speechOutput = "RP Please repeat after me: " + wrongWordQueue[0];
+                } else if(wrongWordQueue.length === 1) {
+                   speechOutput = "RP 1 Almost! But it looks like you made one small mistake! Let's practice! Please repeat after me: " + wrongWordQueue[0];
+                }else{
+                    speechOutput = "RP 2 Looks like you made a mistake on " + wrongWordQueue.length + "words. Don't worry, let's practice! Okay, repeat after me: " + wrongWordQueue[0];
                 }
             }
             response.ask(speechOutput, speechOutput);
