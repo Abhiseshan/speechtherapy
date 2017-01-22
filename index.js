@@ -170,8 +170,9 @@ function handleSpeechTherapyRequest(intent, session, response) {
 
         // Create speech output
         currentState = BEGIN;
-        speechOutput = currentState + "Please repeat after me: " + randomPhrase;
+        speechOutput = "Please repeat after me: " + randomPhrase;
         currentState = REPEAT;
+
 
         response.ask(speechOutput, speechOutput);
 }
@@ -188,7 +189,7 @@ function handleVerifySpeechRequest(intent, session, response) {
         if (detectedSpeech.localeCompare(currentPhrase)===0){
             currentState = COMPLETE;
             wrongWordQueue = [];
-            speechOutput = "Well done! Say Another One to try a new sentance or quit to quit Speech Therapy.";
+            speechOutput = "Well done! Say another one to try a new sentance or quit to quit Speech Therapy.";
             response.ask(speechOutput, speechOutput);
         } else {
             currentState = WORD_REPEAT;
@@ -196,10 +197,10 @@ function handleVerifySpeechRequest(intent, session, response) {
             var ans = currentPhrase.split(" ");
             var inp = detectedSpeech.split(" ");
 
-            //Some kind of machine learnign?
+            //Some kind of machine learnign? (case where user skips words or adds extra words)
             if ((ans.length - inp.length) !== 0) {
                 currentState = REPEAT;
-                speechOutput = "Could you please repeat after me: " + currentPhrase;
+                speechOutput = "Not quite! Let's try again. Repeat after me: " + currentPhrase;
             } else {
                 currentState = WORD_REPEAT;
                 for (i=0; i<ans.length; i++) {
