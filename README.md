@@ -1,5 +1,7 @@
 ## Speech Therapy
 
+[![forthebadge](http://forthebadge.com/images/badges/fuck-it-ship-it.svg)](http://forthebadge.com)
+
 Speech Therapy is an Amazon Alexa skill meant for users who would like to improve their speaking skills.
 
 The user is asked to repeat phrases back to Alexa, which she then analyzes for errors such as stuttering, false starts, or mispronunciation. Speech Therapy then focuses on these problem areas, and continually drills the user on them.
